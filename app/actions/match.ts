@@ -133,6 +133,43 @@ export async function markPlayerPaidAction(playerId: string, matchId: string) {
   return { success: true };
 }
 
+export async function markPlayerPendingAction(playerId: string, matchId: string) {
+  const user = await requireAuth();
+  const supabase = await createClient();
+
+  // Verify match belongs to captain
+  const { data: match } = await supabase
+    .from('matches')
+    .select('created_by, status')
+    .eq('id', matchId)
+    .single();
+
+  if (!match || match.created_by !== user.id) {
+    return { error: 'Unauthorized' };
+  }
+
+  if (match.status !== 'open') {
+    return { error: 'Cannot change payment status on a closed match' };
+  }
+
+  const { error } = await supabase
+    .from('match_players')
+    .update({
+      paid: false,
+      paid_at: null,
+    })
+    .eq('id', playerId)
+    .eq('match_id', matchId);
+
+  if (error) {
+    return { error: 'Failed to mark player as pending' };
+  }
+
+  revalidatePath(`/match/${matchId}/admin`);
+
+  return { success: true };
+}
+
 export async function getDashboardMatches() {
   const user = await requireAuth();
   const supabase = await createClient();

@@ -4,6 +4,30 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Match status enum
 CREATE TYPE match_status AS ENUM ('open', 'closed');
 
+-- Captain profile table to store captain and team names
+CREATE TABLE IF NOT EXISTS captain_profiles (
+    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    display_name TEXT NOT NULL,
+    team_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE captain_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "captain_profiles_select_own" ON captain_profiles
+    FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "captain_profiles_insert_own" ON captain_profiles
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "captain_profiles_update_own" ON captain_profiles
+    FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
 -- Matches table with fee breakdown support
 CREATE TABLE matches (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

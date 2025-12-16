@@ -46,8 +46,8 @@ export function generateShareMessage(
   feeBreakdown: any,
   matchLink: string
 ): string {
-  let message = `🏏 Cricket Match - ${formatDate(date)}\n\n`;
-  
+  let message = `Cricket Match - ${formatDate(date)}\n\n`;
+
   if (feeBreakdown?.is_detailed && feeBreakdown.items?.length > 0) {
     // Detailed breakdown
     feeBreakdown.items.forEach((item: any) => {
@@ -58,8 +58,8 @@ export function generateShareMessage(
     // Simple amount
     message += `Match fee per head: ${formatCurrency(feeAmount)}\n`;
   }
-  
-  message += `\n👉 Join and pay here:\n${matchLink}`;
-  
+
+  message += `\nJoin and pay here:\n${matchLink}`;
+
   return message;
 }

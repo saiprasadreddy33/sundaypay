@@ -9,6 +9,7 @@ import { getMatchDetails, joinMatchAction, markSelfPaidAction } from '@/app/acti
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { generateUPILink } from '@/lib/upi';
 import { Match, MatchPlayer } from '@/lib/types';
+import { DeveloperContactModal } from '@/components/DeveloperContactModal';
 
 type PlayerState = 'initial' | 'joining' | 'joined' | 'paying' | 'confirming' | 'paid';
 
@@ -26,7 +27,8 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
 
   useEffect(() => {
     loadMatchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const loadMatchData = async () => {
     setLoading(true);
@@ -44,6 +46,10 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
   };
 
   const handleJoin = async () => {
+    if (!match || match.status !== 'open') {
+      showToast('This match is closed. You cannot join now.', 'error');
+      return;
+    }
     if (!playerName.trim()) {
       showToast('Please enter your name', 'error');
       return;
@@ -139,24 +145,32 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
 
   const paidCount = players.filter(p => p.paid).length;
   const totalPlayers = players.length;
+  const developerPhone = process.env.NEXT_PUBLIC_DEVELOPER_PHONE;
+  const isOpen = match.status === 'open';
 
   return (
     <>
       {ToastComponent}
-      <div className="min-h-screen pb-20 bg-white">
-        {/* Header */}
-        <div className="bg-gray-900 text-white p-6 border-b border-gray-800">
-          <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-lg font-semibold mb-1">Match Details</h1>
-            <h1 className="text-2xl font-bold mb-2">Cricket Match</h1>
-            <p className="text-lg opacity-90">{formatDate(match.date)}</p>
+      <div className="min-h-screen pb-20">
+        <header className="bg-gradient-to-r from-cyan-500/20 via-emerald-500/10 to-transparent text-white px-4 py-5 sm:p-6 border-b border-white/10 backdrop-blur-xl">
+          <div className="max-w-2xl mx-auto text-center space-y-2">
+            <p className="pill justify-center mx-auto">Player View</p>
+            <h1 className="text-lg font-semibold">Match Details</h1>
+            <h2 className="text-2xl font-bold text-slate-50">Cricket Match</h2>
+            <p className="text-lg text-slate-200/85">{formatDate(match.date)}</p>
+            {!isOpen && (
+              <p className="text-xs font-medium text-amber-200/90">
+                This match is closed. You can only view the details.
+              </p>
+            )}
           </div>
-        </div>
+        </header>
 
-        {/* Content */}
-        <div className="max-w-2xl mx-auto p-4 space-y-4">
-          {/* Match Details */}
-          <Card>
+        <main
+          className="max-w-2xl mx-auto px-4 py-5 space-y-4"
+          aria-label="Player match details and actions"
+        >
+          <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
             <CardHeader>
               <CardTitle>Match Details</CardTitle>
             </CardHeader>
@@ -164,31 +178,30 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
               {match.fee_breakdown?.is_detailed && match.fee_breakdown.items.length > 0 ? (
                 <div className="space-y-2">
                   {match.fee_breakdown.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-gray-600">{item.title}:</span>
-                      <span className="font-medium">{formatCurrency(item.amount)}</span>
+                    <div key={idx} className="flex justify-between text-sm text-slate-200/85">
+                      <span>{item.title}:</span>
+                      <span className="font-semibold text-slate-50">{formatCurrency(item.amount)}</span>
                     </div>
                   ))}
-                  <div className="pt-2 border-t border-gray-200 flex justify-between font-semibold text-lg">
+                  <div className="pt-2 border-t border-white/10 flex justify-between font-semibold text-lg text-cyan-100">
                     <span>Match fee per head:</span>
-                    <span className="text-primary">{formatCurrency(match.fee_amount)}</span>
+                    <span className="text-cyan-100">{formatCurrency(match.fee_amount)}</span>
                   </div>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary">{formatCurrency(match.fee_amount)}</p>
-                  <p className="text-sm text-gray-500">per player</p>
+                  <p className="text-3xl font-bold text-cyan-100">{formatCurrency(match.fee_amount)}</p>
+                  <p className="text-sm text-slate-400">per player</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Players List */}
-          <Card>
+          <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <CardTitle>Players</CardTitle>
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-sm font-normal text-slate-400">
                   {paidCount} / {totalPlayers} paid
                 </span>
               </div>
@@ -198,14 +211,14 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
                 {players.map((player) => (
                   <div
                     key={player.id}
-                    className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 bg-white/5 rounded-lg border border-white/10"
                   >
-                    <span className="font-medium">{player.player_name}</span>
+                    <span className="font-medium w-full sm:w-auto">{player.player_name}</span>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      className={`px-3 py-1 rounded-full text-xs font-medium w-full sm:w-auto text-center ${
                         player.paid
-                          ? 'bg-success/10 text-success'
-                          : 'bg-warning/10 text-warning'
+                          ? 'bg-success/20 text-success'
+                          : 'bg-warning/20 text-warning'
                       }`}
                     >
                       {player.paid ? '✓ Paid' : 'Pending'}
@@ -213,7 +226,7 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
                   </div>
                 ))}
                 {players.length === 0 && (
-                  <p className="text-center text-gray-500 py-4">
+                  <p className="text-center text-slate-400 py-4">
                     No players yet. Be the first!
                   </p>
                 )}
@@ -221,14 +234,13 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
             </CardContent>
           </Card>
 
-          {/* Player Actions */}
-          {state === 'initial' && (
-            <Card>
+          {isOpen && state === 'initial' && (
+            <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
               <CardHeader>
                 <CardTitle>Join Match</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-600">Enter your name to join this match</p>
+                <p className="text-slate-300">Enter your name to join this match</p>
                 <Input
                   placeholder="Your Name"
                   value={playerName}
@@ -242,18 +254,18 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
             </Card>
           )}
 
-          {state === 'joined' && (
-            <Card>
+          {isOpen && state === 'joined' && (
+            <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
               <CardHeader>
                 <CardTitle>Payment</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="text-center bg-success/5 border border-success rounded-lg p-4">
+                <div className="text-center bg-emerald-500/10 border border-emerald-400/25 rounded-lg p-4">
                   <p className="text-success font-semibold mb-2">✓ Joined Successfully!</p>
-                  <p className="text-sm text-gray-600">Welcome, {playerName}!</p>
+                  <p className="text-sm text-slate-200/85">Welcome, {playerName}!</p>
                 </div>
-                <p className="text-gray-600">
-                  Pay <span className="font-bold text-primary">{formatCurrency(match.fee_amount)}</span> to proceed
+                <p className="text-slate-300">
+                  Pay <span className="font-bold text-cyan-100">{formatCurrency(match.fee_amount)}</span> to proceed
                 </p>
                 <Button size="lg" className="w-full" onClick={handlePayNow}>
                   Pay Now via UPI
@@ -262,32 +274,32 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
             </Card>
           )}
 
-          {state === 'confirming' && (
-            <Card>
+          {isOpen && state === 'confirming' && (
+            <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
               <CardHeader>
                 <CardTitle>Payment Instructions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm font-semibold text-blue-900 mb-3">Send payment to:</p>
-                  <div className="bg-white p-3 rounded border border-blue-200 mb-3">
-                    <p className="text-xs text-gray-600">UPI ID</p>
-                    <p className="text-lg font-mono font-bold text-gray-900">{match.upi_id}</p>
+                <div className="bg-cyan-500/10 border border-cyan-400/25 rounded-lg p-4">
+                  <p className="text-sm font-semibold text-cyan-100 mb-3">Send payment to:</p>
+                  <div className="bg-white/10 p-3 rounded border border-white/10 mb-3">
+                    <p className="text-xs text-slate-300">UPI ID</p>
+                    <p className="text-lg font-mono font-bold text-slate-50">{match.upi_id}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white p-3 rounded border border-blue-200">
-                      <p className="text-xs text-gray-600">Amount</p>
-                      <p className="text-lg font-bold text-primary">{formatCurrency(match.fee_amount)}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-white/10 p-3 rounded border border-white/10">
+                      <p className="text-xs text-slate-300">Amount</p>
+                      <p className="text-lg font-bold text-cyan-100">{formatCurrency(match.fee_amount)}</p>
                     </div>
-                    <div className="bg-white p-3 rounded border border-blue-200">
-                      <p className="text-xs text-gray-600">For</p>
-                      <p className="text-sm font-semibold text-gray-900">Cricket Match</p>
+                    <div className="bg-white/10 p-3 rounded border border-white/10">
+                      <p className="text-xs text-slate-300">For</p>
+                      <p className="text-sm font-semibold text-slate-50">Cricket Match</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-4">
-                  <p className="text-sm text-gray-600 mb-3">After sending the payment:</p>
+                <div className="border-t border-white/10 pt-4 space-y-3">
+                  <p className="text-sm text-slate-300">After sending the payment:</p>
                   <Button
                     size="lg"
                     className="w-full"
@@ -296,36 +308,37 @@ export default function MatchPage({ params }: { params: Promise<{ id: string }> 
                   >
                     ✓ Payment Done - Confirm
                   </Button>
+                  <Button
+                    size="lg"
+                    className="w-full"
+                    variant="outline"
+                    onClick={handlePayNow}
+                  >
+                    Try UPI App Again
+                  </Button>
                 </div>
-
-                <Button
-                  size="lg"
-                  className="w-full"
-                  variant="outline"
-                  onClick={handlePayNow}
-                >
-                  Try UPI App Again
-                </Button>
               </CardContent>
             </Card>
           )}
 
           {state === 'paid' && (
-            <Card>
+            <Card className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)]">
               <CardHeader>
                 <CardTitle>All Done!</CardTitle>
               </CardHeader>
               <CardContent className="text-center py-6">
                 <div className="text-5xl mb-4">✅</div>
                 <p className="text-xl font-semibold text-success mb-2">Payment Confirmed!</p>
-                <p className="text-gray-600">Thank you, {playerName}!</p>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-slate-200/85">Thank you, {playerName}!</p>
+                <p className="text-sm text-slate-400 mt-4">
                   See you on {formatDate(match.date)}
                 </p>
               </CardContent>
             </Card>
           )}
-        </div>
+
+          <DeveloperContactModal phone={developerPhone} />
+        </main>
       </div>
     </>
   );

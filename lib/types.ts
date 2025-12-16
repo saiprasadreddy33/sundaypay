@@ -49,3 +49,11 @@ export interface DashboardMatch {
 export interface MatchWithPlayers extends Match {
   players: MatchPlayer[];
 }
+
+export interface CaptainProfile {
+  user_id: string;
+  display_name: string;
+  team_name: string | null;
+  created_at: string;
+  updated_at: string;
+}

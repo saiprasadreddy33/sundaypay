@@ -9,20 +9,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'btn-premium font-medium inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed';
+    const baseStyles =
+      'btn-premium font-medium inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900';
 
     const variants = {
-      primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 focus:ring-gray-400',
-      danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-red-500',
-      outline: 'border border-gray-300 text-gray-900 hover:bg-gray-50 active:bg-gray-100 focus:ring-blue-500',
-      ghost: 'text-gray-900 hover:bg-gray-100 active:bg-gray-200 focus:ring-gray-400',
+      primary: 'bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 hover:from-cyan-400 hover:to-emerald-300 shadow-cyan-500/20 active:shadow-cyan-500/30',
+      secondary: 'bg-white/10 text-slate-100 border border-white/10 hover:bg-white/20 active:bg-white/25',
+      danger: 'bg-rose-500 text-white hover:bg-rose-600 active:bg-rose-700 shadow-rose-500/30',
+      outline: 'border border-white/30 text-slate-100 hover:bg-white/20 active:bg-white/25',
+      ghost: 'text-slate-200 hover:bg-white/5 active:bg-white/10',
     };
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm rounded-md',
-      md: 'px-4 py-2 text-sm rounded-md',
-      lg: 'px-6 py-2.5 text-base rounded-md',
+      sm: 'px-3 py-1.5 text-sm rounded-lg',
+      md: 'px-4 py-2 text-sm rounded-lg',
+      lg: 'px-6 py-3 text-base rounded-lg',
     };
 
     return (
@@ -30,6 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={disabled || loading}
+        aria-busy={loading || undefined}
         {...props}
       >
         {loading ? (

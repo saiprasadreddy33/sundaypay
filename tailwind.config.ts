@@ -9,11 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#10b981",
-        secondary: "#3b82f6",
-        danger: "#ef4444",
-        warning: "#f59e0b",
-        success: "#10b981",
+        primary: "#22d3ee",
+        secondary: "#0ea5e9",
+        danger: "#f43f5e",
+        warning: "#fbbf24",
+        success: "#34d399",
+        surface: "#0b1224",
+        overlay: "rgba(255,255,255,0.08)",
       },
     },
   },

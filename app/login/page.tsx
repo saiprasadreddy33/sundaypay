@@ -29,55 +29,56 @@ export default function LoginPage() {
   return (
     <>
       {ToastComponent}
-      <div className="min-h-screen flex items-center justify-center p-4 bg-white">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">SundayPay</h1>
-            <p className="text-xs text-gray-600 uppercase tracking-wide">Captain Login</p>
-          </div>
+      <main className="min-h-screen flex items-center justify-center p-4" aria-labelledby="login-title">
+        <section className="w-full max-w-md rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-6">
+          <header className="text-center mb-6">
+            <p className="pill justify-center mx-auto mb-3">Captain Login</p>
+            <h1 id="login-title" className="text-2xl font-semibold text-slate-50 mb-2">
+              SundayPay
+            </h1>
+            <p className="text-xs text-slate-400">Log in to manage your weekly matches</p>
+          </header>
 
-          <div className="bg-white border border-gray-200 rounded-md p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                type="email"
-                name="email"
-                label="Email"
-                placeholder="captain@example.com"
-                required
-                autoComplete="email"
-              />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="email"
+              name="email"
+              label="Email"
+              placeholder="captain@example.com"
+              required
+              autoComplete="email"
+            />
 
-              <Input
-                type="password"
-                name="password"
-                label="Password"
-                placeholder="••••••••"
-                required
-                autoComplete="current-password"
-              />
+            <Input
+              type="password"
+              name="password"
+              label="Password"
+              placeholder="••••••••"
+              required
+              autoComplete="current-password"
+            />
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
+            {error && (
+              <div className="border border-rose-400/30 text-rose-100 px-4 py-3 rounded-xl text-sm bg-rose-500/5">
+                {error}
+              </div>
+            )}
 
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                loading={isPending}
-              >
-                Login
-              </Button>
-            </form>
-          </div>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              loading={isPending}
+            >
+              Login
+            </Button>
+          </form>
 
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Players don't need to login. Just use the match link.
+          <p className="text-center text-sm text-slate-400 mt-4">
+            Players don&apos;t need to log in. They can just use the match link.
           </p>
-        </div>
-      </div>
+        </section>
+      </main>
     </>
   );
 }

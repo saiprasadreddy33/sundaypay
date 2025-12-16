@@ -1,26 +1,17 @@
 @import "tailwindcss";
 
-/* VS Code inspired color palette */
-@theme inline {
-  --color-primary: #007acc;      /* VS Code blue */
-  --color-secondary: #6e6e6e;    /* VS Code gray */
-  --color-accent: #007acc;       /* Same as primary */
-  --color-success: #4ec9b0;      /* VS Code green */
-  --color-warning: #dcdcaa;      /* VS Code yellow */
-  --color-danger: #f48771;       /* VS Code red */
-}
-
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #333333;
-    --border: #d4d4d4;
-    --muted: #6e6e6e;
-    --bg-secondary: #f3f3f3;
-  }
-
-  * {
-    @apply transition-all duration-150 ease-out;
+    --bg: #050914;
+    --bg-strong: #0b1224;
+    --panel: rgba(255, 255, 255, 0.04);
+    --panel-strong: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.12);
+    --muted: #94a3b8;
+    --text: #e2e8f0;
+    --heading: #f8fafc;
+    --accent: #22d3ee;
+    --accent-2: #10b981;
   }
 
   html {
@@ -28,86 +19,85 @@
   }
 
   body {
-    @apply bg-white text-gray-800;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+    color: var(--text);
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.08), transparent 25%),
+      radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.08), transparent 25%),
+      linear-gradient(140deg, #050914 0%, #060b18 35%, #0b1224 100%);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  /* Clean typography */
   h1 {
-    @apply text-3xl font-semibold text-gray-900;
+    @apply text-3xl font-semibold tracking-tight text-slate-50;
   }
 
   h2 {
-    @apply text-2xl font-semibold text-gray-900;
+    @apply text-2xl font-semibold tracking-tight text-slate-50;
   }
 
   h3 {
-    @apply text-lg font-semibold text-gray-900;
+    @apply text-lg font-semibold text-slate-100;
   }
 
   h4 {
-    @apply text-base font-semibold text-gray-900;
+    @apply text-base font-semibold text-slate-100;
   }
 
   p {
-    @apply text-gray-700 leading-relaxed;
+    @apply text-slate-200/80 leading-relaxed;
   }
 
   label {
-    @apply text-sm font-medium text-gray-700;
+    @apply text-sm font-medium text-slate-200/80;
   }
 }
 
 @layer components {
-  /* Clean card - VS Code inspired */
   .card-premium {
-    @apply bg-white border border-gray-200 rounded-md;
+    @apply rounded-2xl border border-[var(--border)] bg-white/5 backdrop-blur-xl shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)] transition-all duration-200;
   }
 
   .card-premium:hover {
-    @apply border-gray-300 shadow-sm;
+    @apply border-[var(--panel-strong)] shadow-[0_25px_60px_-28px_rgba(0,0,0,0.85)] translate-y-[-1px];
   }
 
-  /* Clean input */
   .input-premium {
-    @apply w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md;
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-    @apply placeholder:text-gray-400;
+    @apply w-full px-4 py-3 text-sm rounded-xl border border-[var(--border)] bg-white/5 text-slate-50 placeholder:text-slate-400/80;
+    @apply focus:outline-none focus:ring-2 focus:ring-cyan-300/70 focus:border-cyan-300/60;
   }
 
-  /* Clean button base */
   .btn-premium {
-    @apply inline-flex items-center justify-center text-sm font-medium rounded-md;
-    @apply transition-colors duration-150 active:scale-95;
-    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+    @apply inline-flex items-center justify-center text-sm font-medium rounded-xl transition-all duration-150 active:scale-95 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.9)];
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-cyan-300/70;
   }
 
-  .btn-primary {
-    @apply bg-blue-600 text-white hover:bg-blue-700;
-  }
-
-  .btn-primary:active:not(:disabled) {
-    @apply bg-blue-800;
-  }
-
-  /* Clean overlay */
   .overlay-premium {
-    background: rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle at 10% 10%, rgba(34, 211, 238, 0.15), transparent 30%),
+      radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.14), transparent 32%),
+      rgba(3, 7, 18, 0.8);
   }
 
-  /* Form sections */
   .form-section {
     @apply space-y-4;
   }
 
   .form-group {
     @apply space-y-2;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold uppercase tracking-wide rounded-full bg-white/10 border border-white/10 text-slate-100;
+  }
+
+  .stat-card {
+    @apply rounded-2xl border border-[var(--border)] bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-4 flex flex-col gap-1;
   }
 }
 
@@ -186,9 +176,8 @@
     @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
   }
 
-  /* Hover effect */
   .hover-lift {
-    @apply transition-all hover:shadow-md;
+    @apply transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_35px_-22px_rgba(0,0,0,0.8)];
   }
 
   /* Divider */
@@ -198,23 +187,23 @@
 
   /* Badge styles */
   .badge-premium {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/10 text-slate-100;
   }
 
   .badge-primary {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-400/30;
   }
 
   .badge-success {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-200 border border-emerald-400/30;
   }
 
   .badge-warning {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/15 text-amber-100 border border-amber-400/30;
   }
 
   .badge-danger {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-700;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-200 border border-rose-400/30;
   }
 }
 

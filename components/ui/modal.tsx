@@ -23,6 +23,8 @@ export function Modal({
   closeOnBackdrop = true,
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const titleId = title ? 'modal-title' : undefined;
+  const descriptionId = description ? 'modal-description' : undefined;
 
   useEffect(() => {
     if (isOpen) {
@@ -35,6 +37,53 @@ export function Modal({
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const modalNode = modalRef.current;
+
+    // Move focus into modal
+    const focusable = modalNode?.querySelector<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusable?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+        onClose();
+      }
+      if (event.key === 'Tab' && modalNode) {
+        const focusables = Array.from(
+          modalNode.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => !el.hasAttribute('disabled'));
+
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -54,17 +103,21 @@ export function Modal({
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fadeIn" />
+      <div className="absolute inset-0 overlay-premium backdrop-blur-sm animate-fadeIn" />
 
       {/* Modal */}
       <div
         ref={modalRef}
-        className={`relative bg-white rounded-lg shadow-2xl p-6 w-full mx-4 ${sizeClass} animate-scaleIn`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        className={`relative bg-white/10 border border-white/20 text-slate-100 rounded-2xl shadow-[0_25px_80px_-28px_rgba(0,0,0,0.85)] backdrop-blur-2xl p-6 w-full mx-4 ${sizeClass} animate-scaleIn`}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 transition-colors p-2 hover:bg-white/10 rounded-lg"
           aria-label="Close modal"
         >
           <svg
@@ -85,15 +138,21 @@ export function Modal({
         {/* Header */}
         {(title || description) && (
           <div className="mb-4">
-            {title && <h2 className="text-xl font-semibold text-gray-900">{title}</h2>}
+            {title && (
+              <h2 id={titleId} className="text-xl font-semibold text-slate-50">
+                {title}
+              </h2>
+            )}
             {description && (
-              <p className="text-sm text-gray-600 mt-1">{description}</p>
+              <p id={descriptionId} className="text-sm text-slate-200/80 mt-1">
+                {description}
+              </p>
             )}
           </div>
         )}
 
         {/* Content */}
-        <div className="text-gray-700">{children}</div>
+        <div className="text-slate-200/85">{children}</div>
       </div>
     </div>
   );
@@ -126,8 +185,8 @@ export function ConfirmModal({
     <Modal isOpen={isOpen} onClose={onCancel} size="sm" closeOnBackdrop={false}>
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <p className="text-gray-600 mt-2">{message}</p>
+          <h3 className="text-lg font-semibold text-slate-50">{title}</h3>
+          <p className="text-slate-200/85 mt-2">{message}</p>
         </div>
 
         <div className="flex gap-3 justify-end">

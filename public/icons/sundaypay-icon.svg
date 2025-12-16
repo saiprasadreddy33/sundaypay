@@ -1,0 +1,26 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="176" height="176" rx="40" fill="#020617"/>
+  <rect x="16" y="16" width="160" height="160" rx="36" fill="url(#bg)" fill-opacity="0.16" stroke="url(#bg)" stroke-width="2"/>
+
+  <!-- Cricket stumps -->
+  <g stroke="#E5E7EB" stroke-width="6" stroke-linecap="round">
+    <line x1="70" y1="72" x2="70" y2="132"/>
+    <line x1="96" y1="72" x2="96" y2="132"/>
+    <line x1="122" y1="72" x2="122" y2="132"/>
+  </g>
+
+  <!-- Ball -->
+  <circle cx="128" cy="60" r="14" fill="#F97373" stroke="#FECACA" stroke-width="2"/>
+  <path d="M118 54C123 56 128 57 138 56" stroke="#FECACA" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Rupee / payment mark -->
+  <path d="M54 70H86M54 82H78C86 82 90 86 90 92C90 99 85 104 76 104H54M76 104L90 120" stroke="#A7F3D0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+

@@ -121,26 +121,27 @@ export default function CreateMatchPage() {
   return (
     <>
       {ToastComponent}
-      <div className="min-h-screen pb-20 bg-white">
-        {/* Header */}
-        <div className="bg-gray-900 text-white p-4 sticky top-0 z-10 shadow-sm border-b border-gray-800">
-          <div className="max-w-2xl mx-auto flex items-center gap-4">
+      <div className="min-h-screen pb-20">
+        <header className="sticky top-0 z-10 backdrop-blur-xl bg-[#050914]/80 border-b border-white/10">
+          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:bg-gray-800 hover:text-white">
+              <Button variant="ghost" size="sm">
                 ← Back
               </Button>
             </Link>
             <div>
-              <h1 className="text-base font-medium">Create Match</h1>
+              <p className="text-xs uppercase tracking-wide text-slate-400">Setup</p>
+              <h1 className="text-xl font-semibold text-slate-50">Create match</h1>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Content */}
-        <div className="max-w-2xl mx-auto p-4">
+        <main
+          className="max-w-4xl mx-auto p-4"
+          aria-label="Create a new match and calculate fees"
+        >
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Match Date */}
-            <div className="bg-white border border-gray-200 rounded-md p-4">
+            <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5">
               <Input
                 type="date"
                 label="Match Date"
@@ -150,9 +151,8 @@ export default function CreateMatchPage() {
               />
             </div>
 
-            {/* Fee Mode Toggle */}
-            <div className="bg-white border border-gray-200 rounded-md p-4">
-              <label className="block text-xs font-medium text-gray-700 mb-3 uppercase tracking-wide">
+            <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5">
+              <label className="block text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wide">
                 Fee Calculation Mode
               </label>
               <div className="flex gap-2">
@@ -175,9 +175,8 @@ export default function CreateMatchPage() {
               </div>
             </div>
 
-            {/* Detailed Fee Breakdown */}
             {useDetailed && (
-              <div className="bg-white rounded-lg p-4 shadow space-y-4">
+              <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5 space-y-4">
                 <Input
                   type="number"
                   label="Number of Players"
@@ -189,7 +188,7 @@ export default function CreateMatchPage() {
                 />
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-200 mb-2">
                     Cost Items
                   </label>
                   <div className="space-y-3">
@@ -226,7 +225,7 @@ export default function CreateMatchPage() {
                     variant="outline"
                     size="sm"
                     onClick={addFeeItem}
-                    className="mt-2 w-full"
+                    className="mt-3 w-full"
                   >
                     + Add Item
                   </Button>
@@ -234,23 +233,23 @@ export default function CreateMatchPage() {
 
                 {/* Calculated Fee Display */}
                 {playerCount && parseInt(playerCount) > 0 && (
-                  <div className="bg-primary/5 border border-primary rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Match fee per head:</p>
-                    <p className="text-3xl font-bold text-primary">
+                  <div className="border border-cyan-400/20 bg-cyan-500/5 rounded-xl p-4">
+                    <p className="text-sm text-slate-300 mb-1">Match fee per head</p>
+                    <p className="text-3xl font-bold text-cyan-100">
                       ₹{perHeadFee}
                     </p>
                     {feeItems.some(item => item.title && item.amount) && (
-                      <div className="mt-3 pt-3 border-t border-gray-200 text-sm space-y-1">
+                      <div className="mt-3 pt-3 border-t border-white/10 text-sm space-y-1">
                         {feeItems
                           .filter(item => item.title && item.amount)
                           .map((item, idx) => (
-                            <div key={idx} className="flex justify-between">
-                              <span className="text-gray-600">{item.title}:</span>
-                              <span className="font-medium">₹{item.amount}</span>
+                            <div key={idx} className="flex justify-between text-slate-200/80">
+                              <span>{item.title}:</span>
+                              <span className="font-semibold">₹{item.amount}</span>
                             </div>
                           ))}
-                        <div className="flex justify-between pt-2 border-t border-gray-200 font-semibold">
-                          <span>Total:</span>
+                        <div className="flex justify-between pt-2 border-t border-white/10 font-semibold text-slate-50">
+                          <span>Total</span>
                           <span>
                             ₹
                             {feeItems.reduce(
@@ -266,9 +265,8 @@ export default function CreateMatchPage() {
               </div>
             )}
 
-            {/* Manual Amount Entry */}
             {!useDetailed && (
-              <div className="bg-white rounded-lg p-4 shadow space-y-4">
+              <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5 space-y-4">
                 <Input
                   type="number"
                   label="Match Fee Per Player"
@@ -278,20 +276,10 @@ export default function CreateMatchPage() {
                   required
                   min="1"
                 />
-
-                {/* {manualAmount && parseFloat(manualAmount) > 0 && (
-                  <div className="bg-primary/5 border border-primary rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">Total Match Fee:</p>
-                    <p className="text-3xl font-bold text-primary">
-                      ₹{parseFloat(manualAmount)}
-                    </p>
-                  </div>
-                )} */}
               </div>
             )}
 
-            {/* UPI ID */}
-            <div className="bg-white rounded-lg p-4 shadow">
+            <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5">
               <Input
                 type="text"
                 label="Your UPI ID"
@@ -300,13 +288,12 @@ export default function CreateMatchPage() {
                 onChange={(e) => setUpiId(e.target.value)}
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate-400 mt-2">
                 Players will pay to this UPI ID
               </p>
             </div>
 
-            {/* Reminder Days */}
-            <div className="bg-white rounded-lg p-4 shadow">
+            <div className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-lg shadow-[0_20px_60px_-28px_rgba(0,0,0,0.85)] p-5">
               <Input
                 type="number"
                 label="Send Reminder After (days)"
@@ -318,7 +305,6 @@ export default function CreateMatchPage() {
               />
             </div>
 
-            {/* Submit */}
             <Button
               type="submit"
               size="lg"
@@ -329,7 +315,7 @@ export default function CreateMatchPage() {
               Create Match Link
             </Button>
           </form>
-        </div>
+        </main>
       </div>
     </>
   );

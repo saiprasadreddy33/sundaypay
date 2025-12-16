@@ -66,21 +66,62 @@ export async function joinMatchAction(data: any) {
     return { error: 'This match is no longer accepting players' };
   }
 
-  // Attempt to join
+  // First: check for an exact name match
+  const { data: existingExact, error: existingExactError } = await supabase
+    .from('match_players')
+    .select('*')
+    .eq('match_id', matchId)
+    .eq('player_name', sanitized)
+    .single();
+
+  if (!existingExactError && existingExact) {
+    // Same name already present
+    if (!existingExact.paid) {
+      // Same person coming back while still pending: reuse the same row
+      return { success: true, playerId: existingExact.id, reused: true };
+    }
+    // Name already paid: treat as different person with same name, fall through to suffix logic
+  }
+
+  // Generate a unique display name for "different person, same name"
+  let finalName = sanitized;
+
+  const { data: existingPlayers } = await supabase
+    .from('match_players')
+    .select('player_name')
+    .eq('match_id', matchId)
+    .like('player_name', `${sanitized}%`);
+
+  if (existingPlayers && existingPlayers.length > 0) {
+    const suffixNumbers = existingPlayers
+      .map((p) => {
+        if (p.player_name === sanitized) return 1;
+        const m = p.player_name.match(/^(.+)\s\((\d+)\)$/);
+        if (m && m[1] === sanitized) {
+          return parseInt(m[2], 10);
+        }
+        return null;
+      })
+      .filter((n): n is number => n !== null);
+
+    if (suffixNumbers.length > 0) {
+      const next = Math.max(...suffixNumbers) + 1;
+      finalName = `${sanitized} (${next})`;
+    }
+  }
+
+  // Attempt to join as new player with the chosen display name
   const { data: player, error } = await supabase
     .from('match_players')
     .insert({
       match_id: matchId,
-      player_name: sanitized,
+      player_name: finalName,
       paid: false,
     })
     .select()
     .single();
 
   if (error) {
-    if (error.code === '23505') { // Unique constraint violation
-      return { error: 'This name is already joined' };
-    }
     return { error: 'Failed to join match' };
   }
 
