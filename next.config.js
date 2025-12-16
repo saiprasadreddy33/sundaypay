@@ -10,6 +10,17 @@ module.exports = withPWA({
   reactStrictMode: true,
   // Add empty turbopack config to silence the warning
   turbopack: {},
+  webpack: (config) => {
+    // Work around a webpack/Next interop issue with @supabase/supabase-js ESM wrapper.
+    // Force the direct ESM module entry instead of dist/esm/wrapper.mjs.
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+    config.resolve.alias['@supabase/supabase-js'] = require.resolve(
+      '@supabase/supabase-js/dist/module/index.js'
+    );
+
+    return config;
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
